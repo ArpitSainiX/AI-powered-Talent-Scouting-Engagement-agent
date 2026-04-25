@@ -1,0 +1,1 @@
+"""Talent scouting prototype logic."""

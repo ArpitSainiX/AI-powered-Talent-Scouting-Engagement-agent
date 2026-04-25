@@ -1,0 +1,13 @@
+We are hiring a Full Stack AI Engineer to build recruiter-facing AI agents for talent discovery and candidate engagement.
+
+Requirements:
+- 4+ years of software engineering experience
+- Strong Python and TypeScript skills
+- Experience with FastAPI or similar backend frameworks
+- Experience building with OpenAI API, LangChain, LangGraph, RAG, or vector databases
+- Comfortable building dashboards with React, Next.js, or Streamlit
+- Knowledge of PostgreSQL, Chroma, Pinecone, or Supabase pgvector
+- Bonus: HR tech, recruiting automation, or conversational AI experience
+
+Location: Remote India
+Work mode: Remote
