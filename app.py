@@ -77,30 +77,46 @@ st.markdown(
     """
     <style>
     :root {
-        --ink: #17201b;
-        --muted: #657169;
-        --paper: #f7f8f3;
-        --panel: #ffffff;
-        --line: #e1e5da;
-        --green: #0e7c66;
-        --teal: #37a78f;
-        --amber: #c68121;
-        --rose: #c84b5c;
-        --plum: #6e4f85;
+        --ink: #eaf7ff;
+        --muted: #94a8b8;
+        --paper: #070b13;
+        --line: rgba(126, 242, 214, .22);
+        --green: #38f8c9;
+        --teal: #4aa8ff;
+        --amber: #f8c14a;
+        --rose: #ff5c7a;
+        --plum: #a67cff;
     }
-    .stApp { background: var(--paper); color: var(--ink); }
-    .block-container { padding-top: 1.2rem; max-width: 1320px; }
+    .stApp {
+        background:
+            radial-gradient(circle at 18% 8%, rgba(56,248,201,.12), transparent 28%),
+            radial-gradient(circle at 92% 4%, rgba(74,168,255,.11), transparent 24%),
+            linear-gradient(180deg, #070b13 0%, #090e18 48%, #05070c 100%);
+        color: var(--ink);
+    }
+    .block-container { padding-top: 1.15rem; max-width: 1340px; }
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0b1220, #080c15);
+        border-right: 1px solid var(--line);
+    }
+    section[data-testid="stSidebar"] * { color: var(--ink); }
     h1, h2, h3 { letter-spacing: 0; }
     .hero {
         border: 1px solid var(--line);
         background:
-            linear-gradient(135deg, rgba(14,124,102,.12), rgba(198,129,33,.10)),
-            #ffffff;
+            linear-gradient(135deg, rgba(56,248,201,.16), rgba(74,168,255,.11)),
+            linear-gradient(180deg, rgba(16,24,39,.96), rgba(8,13,23,.96));
         border-radius: 8px;
-        padding: 26px 28px;
+        padding: 28px;
         margin-bottom: 18px;
+        box-shadow: 0 24px 70px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06);
     }
-    .hero h1 { font-size: 2.15rem; margin: 0 0 8px; }
+    .hero h1 {
+        font-size: 2.2rem;
+        margin: 0 0 8px;
+        color: var(--ink);
+        text-shadow: 0 0 24px rgba(56,248,201,.25);
+    }
     .hero p { color: var(--muted); font-size: 1.02rem; margin: 0; max-width: 780px; }
     .mini-label {
         color: var(--green);
@@ -110,34 +126,30 @@ st.markdown(
         letter-spacing: .08rem;
         margin-bottom: 8px;
     }
-    .panel {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 18px;
-        min-height: 100%;
-    }
     .metric-card {
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 14px;
-        background: #fff;
+        background: linear-gradient(180deg, rgba(16,24,39,.98), rgba(10,15,25,.98));
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
     }
     .metric-card span { color: var(--muted); font-size: .82rem; }
-    .metric-card strong { display: block; font-size: 1.45rem; margin-top: 4px; }
+    .metric-card strong { display: block; color: var(--ink); font-size: 1.35rem; margin-top: 4px; line-height: 1.15; }
     .chip {
         display: inline-block;
-        border: 1px solid #cfd7cc;
+        border: 1px solid rgba(56,248,201,.28);
         border-radius: 999px;
         padding: 4px 10px;
         margin: 3px 5px 3px 0;
-        background: #fbfcf8;
-        color: #26322c;
+        background: rgba(56,248,201,.08);
+        color: #dffef7;
         font-size: .82rem;
     }
     .score-wrap { margin: 10px 0 14px; }
     .score-row { display: flex; justify-content: space-between; font-size: .88rem; margin-bottom: 6px; }
-    .score-track { height: 9px; border-radius: 999px; background: #e7ebe2; overflow: hidden; }
+    .score-row span { color: var(--muted); }
+    .score-row strong { color: var(--ink); }
+    .score-track { height: 9px; border-radius: 999px; background: rgba(148,168,184,.16); overflow: hidden; }
     .score-fill { height: 100%; border-radius: 999px; }
     .score-fill.high { background: linear-gradient(90deg, var(--green), var(--teal)); }
     .score-fill.mid { background: linear-gradient(90deg, var(--amber), #e4b358); }
@@ -154,23 +166,58 @@ st.markdown(
     .candidate-head h3 { margin: 0; font-size: 1.05rem; }
     .candidate-head p { margin: 4px 0 0; color: var(--muted); }
     .rank-pill {
-        background: #17201b;
-        color: white;
+        background: linear-gradient(135deg, var(--green), var(--teal));
+        color: #061018;
         border-radius: 999px;
         padding: 5px 10px;
+        font-weight: 800;
         font-size: .78rem;
         white-space: nowrap;
     }
-    div[data-testid="stExpander"] { border: 1px solid var(--line); border-radius: 8px; background: white; }
+    div[data-testid="stExpander"] {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(16,24,39,.72);
+        box-shadow: 0 14px 42px rgba(0,0,0,.18);
+    }
+    div[data-testid="stExpander"] summary:hover { color: var(--green); }
     .stButton > button {
         border-radius: 8px;
-        border: 1px solid var(--green);
-        background: var(--green);
-        color: white;
+        border: 1px solid rgba(56,248,201,.72);
+        background: linear-gradient(135deg, #38f8c9, #4aa8ff);
+        color: #061018;
         font-weight: 700;
+        box-shadow: 0 10px 32px rgba(56,248,201,.16);
     }
-    .stTextArea textarea { border-radius: 8px; }
-    [data-testid="stDataFrame"] { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .stDownloadButton > button {
+        border-radius: 8px;
+        border: 1px solid rgba(56,248,201,.34);
+        background: rgba(16,24,39,.94);
+        color: var(--ink);
+    }
+    .stTextArea textarea, .stTextInput input, div[data-baseweb="select"] > div {
+        border-radius: 8px;
+        border-color: rgba(126,242,214,.22) !important;
+        background: rgba(6,10,18,.92) !important;
+        color: var(--ink) !important;
+    }
+    [data-testid="stDataFrame"] {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(16,24,39,.86);
+    }
+    div[data-testid="stAlert"] {
+        background: rgba(248,193,74,.12);
+        border: 1px solid rgba(248,193,74,.28);
+        color: var(--ink);
+    }
+    div[data-testid="stInfo"] {
+        background: rgba(74,168,255,.12);
+        border: 1px solid rgba(74,168,255,.28);
+        color: var(--ink);
+    }
+    hr { border-color: rgba(126,242,214,.16) !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -215,7 +262,6 @@ with st.sidebar:
 input_col, parsed_col = st.columns([1.15, 0.85], gap="large")
 
 with input_col:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
     st.markdown("#### Job Description")
     jd_text = st.text_area(
         "Paste a JD",
@@ -224,10 +270,8 @@ with input_col:
         label_visibility="collapsed",
     )
     run = st.button("Run Talent Scout", type="primary", width="stretch")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 with parsed_col:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
     st.markdown("#### Agent Status")
     status_cols = st.columns(3)
     status_cols[0].markdown(f'<div class="metric-card"><span>Candidates</span><strong>{len(CANDIDATES)}</strong></div>', unsafe_allow_html=True)
@@ -238,7 +282,6 @@ with parsed_col:
         st.warning(f"Add a {provider} API key in the sidebar or Streamlit secrets to enable AI enrichment.")
     if use_ai and api_key and not provider_available:
         st.error(f"The {provider} package is not installed. Run `pip install -r requirements.txt`.")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 if run or "ranked" not in st.session_state:
     parsed_jd = parse_jd(jd_text)
@@ -328,19 +371,15 @@ top = shortlist[0]
 st.markdown("### Recruiter Recommendation")
 rec_cols = st.columns([0.95, 1.05])
 with rec_cols[0]:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
     st.markdown(f"#### Prioritize {top['name']}")
     st.write(top.get("next_action", "Move this candidate to recruiter follow-up."))
     score_bar("Final Score", float(top["final_score"]))
     score_bar("Match Score", float(top["match_score"]))
     score_bar("Interest Score", float(top["interest_score"]))
-    st.markdown("</div>", unsafe_allow_html=True)
 with rec_cols[1]:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
     st.markdown("#### Why this shortlist is actionable")
     st.write("The ranking separates role fit from candidate intent, so recruiters can avoid wasting time on profiles that look strong but show weak engagement.")
     st.write("Each profile includes a matching rationale, an outreach message, a simulated response, and the next best action.")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("### Candidate Intelligence")
 for index, candidate in enumerate(shortlist, start=1):
