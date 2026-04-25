@@ -7,7 +7,7 @@ ScoutFlow AI takes a job description, extracts role requirements, ranks candidat
 - **Match Score**: how well the candidate fits the JD
 - **Interest Score**: how likely the candidate is to engage
 
-The app works without an API key using deterministic fallback logic, and becomes more impressive with OpenAI enrichment enabled.
+The app works without an API key using deterministic fallback logic, and becomes more impressive with Gemini or OpenAI enrichment enabled.
 
 ## Live Demo Flow
 
@@ -23,7 +23,7 @@ The app works without an API key using deterministic fallback logic, and becomes
 - Python
 - Streamlit frontend
 - Modular backend logic in `talent_agent/`
-- OpenAI API for optional AI parsing, outreach, reply simulation, and explanations
+- Gemini or OpenAI API for optional AI parsing, outreach, reply simulation, and explanations
 - Pandas for shortlist exports
 - JSON seed dataset for safe candidate discovery simulation
 
@@ -62,11 +62,19 @@ Open:
 http://localhost:8501
 ```
 
-## OpenAI Setup
+## AI Provider Setup
 
 Never commit your real API key.
 
-For local development, set an environment variable:
+For local Gemini development, set environment variables:
+
+```bash
+set GEMINI_API_KEY=your_key_here
+set GEMINI_MODEL=gemini-2.5-flash
+streamlit run app.py
+```
+
+For local OpenAI development, set environment variables:
 
 ```bash
 set OPENAI_API_KEY=your_key_here
@@ -74,13 +82,17 @@ set OPENAI_MODEL=gpt-4.1-mini
 streamlit run app.py
 ```
 
-Or paste the key into the sidebar during a local session. The app does not store the sidebar key in the repository.
+Or paste either key into the sidebar during a local session. The app does not store sidebar keys in the repository.
 
 For Streamlit Community Cloud, add this in app secrets:
 
 ```toml
-OPENAI_API_KEY = "your_key_here"
-OPENAI_MODEL = "gpt-4.1-mini"
+GEMINI_API_KEY = "your_key_here"
+GEMINI_MODEL = "gemini-2.5-flash"
+
+# Optional fallback
+# OPENAI_API_KEY = "your_key_here"
+# OPENAI_MODEL = "gpt-4.1-mini"
 ```
 
 ## GitHub Deployment Checklist
@@ -88,10 +100,10 @@ OPENAI_MODEL = "gpt-4.1-mini"
 Before pushing:
 
 - Confirm `.env` and `.streamlit/secrets.toml` are not committed.
-- Confirm the OpenAI key is not present in any file.
+- Confirm API keys are not present in any file.
 - Push the repo to GitHub.
 - Deploy on Streamlit Community Cloud.
-- Add `OPENAI_API_KEY` in Streamlit secrets.
+- Add `GEMINI_API_KEY` or `OPENAI_API_KEY` in Streamlit secrets.
 
 ## Scoring
 
@@ -131,7 +143,7 @@ Interest Score considers:
 ]
 ```
 
-Scores can change when OpenAI enrichment is enabled.
+Scores can change when AI enrichment is enabled.
 
 ## Architecture
 

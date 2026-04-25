@@ -7,7 +7,15 @@ import pandas as pd
 import streamlit as st
 
 from talent_agent.engine import load_candidates, parse_jd, rank_candidates_with_parsed_jd
-from talent_agent.llm import DEFAULT_MODEL, enrich_candidate_with_ai, get_api_key, has_openai, parse_jd_with_ai
+from talent_agent.llm import (
+    DEFAULT_GEMINI_MODEL,
+    DEFAULT_OPENAI_MODEL,
+    enrich_candidate_with_ai,
+    get_api_key,
+    has_gemini,
+    has_openai,
+    parse_jd_with_ai,
+)
 
 
 ROOT = Path(__file__).parent
@@ -179,20 +187,30 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-secret_key = read_secret("OPENAI_API_KEY")
+openai_secret_key = read_secret("OPENAI_API_KEY")
+gemini_secret_key = read_secret("GEMINI_API_KEY")
 
 with st.sidebar:
     st.markdown("### Control Room")
-    use_ai = st.toggle("Use OpenAI enrichment", value=bool(secret_key), help="Fallback scoring works without an API key.")
-    model = st.text_input("OpenAI model", value=read_secret("OPENAI_MODEL") or DEFAULT_MODEL)
-    typed_key = st.text_input("OpenAI API key", type="password", help="Used only for this session. Do not commit keys to GitHub.")
-    api_key = get_api_key(typed_key or secret_key)
+    provider = st.selectbox("AI provider", ["Gemini", "OpenAI"], index=0)
+    default_key_present = bool(gemini_secret_key if provider == "Gemini" else openai_secret_key)
+    use_ai = st.toggle("Use AI enrichment", value=default_key_present, help="Fallback scoring works without an API key.")
+    if provider == "Gemini":
+        model = st.text_input("Gemini model", value=read_secret("GEMINI_MODEL") or DEFAULT_GEMINI_MODEL)
+        typed_key = st.text_input("Gemini API key", type="password", help="Used only for this session. Do not commit keys to GitHub.")
+        api_key = get_api_key(typed_key or gemini_secret_key, "GEMINI_API_KEY")
+        provider_available = has_gemini()
+    else:
+        model = st.text_input("OpenAI model", value=read_secret("OPENAI_MODEL") or DEFAULT_OPENAI_MODEL)
+        typed_key = st.text_input("OpenAI API key", type="password", help="Used only for this session. Do not commit keys to GitHub.")
+        api_key = get_api_key(typed_key or openai_secret_key, "OPENAI_API_KEY")
+        provider_available = has_openai()
     shortlist_size = st.slider("Shortlist size", 3, len(CANDIDATES), 5)
     enrich_count = st.slider("AI-enrich top candidates", 1, 5, min(3, shortlist_size), disabled=not use_ai)
     st.divider()
     st.markdown("### Scoring Formula")
     st.caption("Final Score = 65% Match Score + 35% Interest Score")
-    st.caption("OpenAI improves parsing, outreach, simulated replies, and explanations. Core ranking still has a deterministic fallback.")
+    st.caption("AI enrichment improves parsing, outreach, simulated replies, and explanations. Core ranking still has a deterministic fallback.")
 
 input_col, parsed_col = st.columns([1.15, 0.85], gap="large")
 
@@ -217,19 +235,19 @@ with parsed_col:
     status_cols[2].markdown(f'<div class="metric-card"><span>Shortlist</span><strong>{shortlist_size}</strong></div>', unsafe_allow_html=True)
 
     if use_ai and not api_key:
-        st.warning("Add an API key in the sidebar or Streamlit secrets to enable AI enrichment.")
-    if use_ai and api_key and not has_openai():
-        st.error("The OpenAI package is not installed. Run `pip install -r requirements.txt`.")
+        st.warning(f"Add a {provider} API key in the sidebar or Streamlit secrets to enable AI enrichment.")
+    if use_ai and api_key and not provider_available:
+        st.error(f"The {provider} package is not installed. Run `pip install -r requirements.txt`.")
     st.markdown("</div>", unsafe_allow_html=True)
 
 if run or "ranked" not in st.session_state:
     parsed_jd = parse_jd(jd_text)
-    ai_enabled = use_ai and bool(api_key) and has_openai()
+    ai_enabled = use_ai and bool(api_key) and provider_available
 
     if ai_enabled:
-        with st.spinner("Parsing JD with OpenAI..."):
+        with st.spinner(f"Parsing JD with {provider}..."):
             try:
-                ai_parsed = parse_jd_with_ai(jd_text, api_key, model)
+                ai_parsed = parse_jd_with_ai(jd_text, api_key, model, provider)
                 if ai_parsed:
                     parsed_jd = {**parsed_jd, **ai_parsed}
             except Exception as exc:
@@ -245,7 +263,7 @@ if run or "ranked" not in st.session_state:
                 updated = dict(candidate)
                 if index < enrich_count:
                     try:
-                        ai_candidate = enrich_candidate_with_ai(jd_text, parsed_jd, candidate, api_key, model)
+                        ai_candidate = enrich_candidate_with_ai(jd_text, parsed_jd, candidate, api_key, model, provider)
                         if ai_candidate:
                             updated.update(ai_candidate)
                             updated["interest_score"] = int(max(0, min(100, updated["interest_score"])))

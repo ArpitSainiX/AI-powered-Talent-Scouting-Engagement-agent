@@ -4,12 +4,12 @@ ScoutFlow AI is designed as a small agentic workflow that can be explained clear
 
 ```mermaid
 flowchart LR
-    A["Recruiter enters JD"] --> B["JD Parser: fallback or OpenAI"]
+    A["Recruiter enters JD"] --> B["JD Parser: fallback, Gemini, or OpenAI"]
     B --> C["Structured role requirements"]
     C --> D["Candidate Discovery"]
     D --> E["Match Scoring"]
     E --> F["Explainability Layer"]
-    F --> G["Outreach Simulator: fallback or OpenAI"]
+    F --> G["Outreach Simulator: fallback, Gemini, or OpenAI"]
     G --> H["Interest Scoring"]
     H --> I["Ranked Shortlist"]
     I --> J["CSV and JSON Export"]
@@ -28,7 +28,7 @@ Extracts:
 - Location
 - Work mode
 
-Current prototype uses keyword and regex parsing as a reliable fallback. When an OpenAI key is available, the app uses AI extraction for richer structured fields.
+Current prototype uses keyword and regex parsing as a reliable fallback. When a Gemini or OpenAI key is available, the app uses AI extraction for richer structured fields.
 
 ### 2. Candidate Discovery
 
@@ -68,7 +68,7 @@ The agent generates a recruiter-style first message and simulates a candidate re
 - Work preference
 - Response style
 
-Each candidate receives an `interest_score` from 0 to 100. With OpenAI enabled, the top candidates receive personalized outreach, simulated replies, risk flags, and next actions.
+Each candidate receives an `interest_score` from 0 to 100. With Gemini or OpenAI enabled, the top candidates receive personalized outreach, simulated replies, risk flags, and next actions.
 
 ### 5. Ranked Shortlist
 
@@ -92,5 +92,5 @@ The output gives recruiters:
 - It avoids fragile LinkedIn scraping.
 - It is explainable enough for judges.
 - It can run locally without paid APIs.
-- It can use OpenAI for a stronger judged demo.
+- It can use Gemini or OpenAI for a stronger judged demo.
 - It leaves a clear path to production integrations.

@@ -34,3 +34,7 @@ Show the generated recruiter message and simulated candidate reply. Explain how 
 ## 4:20 - 5:00 Closing
 
 Show CSV/JSON exports and architecture diagram. Mention production upgrades: GitHub discovery, ATS integration, vector DB, and real conversational outreach.
+
+## AI Provider Note
+
+For a live demo, enable Gemini or OpenAI in the sidebar. If the API quota fails, turn off AI enrichment and continue with fallback scoring.

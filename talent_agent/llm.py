@@ -5,7 +5,9 @@ import os
 from typing import Any
 
 
-DEFAULT_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+DEFAULT_OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+DEFAULT_MODEL = DEFAULT_OPENAI_MODEL
 
 
 def has_openai() -> bool:
@@ -16,10 +18,18 @@ def has_openai() -> bool:
     return True
 
 
-def get_api_key(explicit_key: str | None = None) -> str | None:
+def has_gemini() -> bool:
+    try:
+        import google.genai  # noqa: F401
+    except Exception:
+        return False
+    return True
+
+
+def get_api_key(explicit_key: str | None = None, env_name: str = "OPENAI_API_KEY") -> str | None:
     if explicit_key:
         return explicit_key.strip()
-    return os.getenv("OPENAI_API_KEY")
+    return os.getenv(env_name)
 
 
 def _extract_text(response: Any) -> str:
@@ -43,7 +53,7 @@ def _json_from_text(text: str) -> dict:
     return json.loads(cleaned)
 
 
-def call_json(prompt: str, api_key: str, model: str = DEFAULT_MODEL) -> dict | None:
+def call_openai_json(prompt: str, api_key: str, model: str = DEFAULT_OPENAI_MODEL) -> dict | None:
     if not api_key or not has_openai():
         return None
 
@@ -67,7 +77,45 @@ def call_json(prompt: str, api_key: str, model: str = DEFAULT_MODEL) -> dict | N
     return _json_from_text(_extract_text(response))
 
 
-def parse_jd_with_ai(jd_text: str, api_key: str, model: str = DEFAULT_MODEL) -> dict | None:
+def call_gemini_json(prompt: str, api_key: str, model: str = DEFAULT_GEMINI_MODEL) -> dict | None:
+    if not api_key or not has_gemini():
+        return None
+
+    from google import genai
+
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(
+        model=model,
+        contents=(
+            "You are a precise recruiting automation engine. "
+            "Return only valid compact JSON. Do not include markdown.\n\n"
+            f"{prompt}"
+        ),
+        config={
+            "temperature": 0.25,
+            "response_mime_type": "application/json",
+        },
+    )
+    return _json_from_text(response.text or "")
+
+
+def call_json(
+    prompt: str,
+    api_key: str,
+    model: str = DEFAULT_OPENAI_MODEL,
+    provider: str = "OpenAI",
+) -> dict | None:
+    if provider == "Gemini":
+        return call_gemini_json(prompt, api_key, model)
+    return call_openai_json(prompt, api_key, model)
+
+
+def parse_jd_with_ai(
+    jd_text: str,
+    api_key: str,
+    model: str = DEFAULT_OPENAI_MODEL,
+    provider: str = "OpenAI",
+) -> dict | None:
     prompt = f"""
 Extract structured recruiting requirements from this job description.
 
@@ -85,7 +133,7 @@ nice_to_haves: array of strings
 Job description:
 {jd_text}
 """
-    return call_json(prompt, api_key, model)
+    return call_json(prompt, api_key, model, provider)
 
 
 def enrich_candidate_with_ai(
@@ -93,7 +141,8 @@ def enrich_candidate_with_ai(
     parsed_jd: dict,
     candidate: dict,
     api_key: str,
-    model: str = DEFAULT_MODEL,
+    model: str = DEFAULT_OPENAI_MODEL,
+    provider: str = "OpenAI",
 ) -> dict | None:
     prompt = f"""
 Act as a recruiter AI agent. Use the JD and candidate profile to produce outreach,
@@ -116,4 +165,4 @@ Parsed JD:
 Candidate:
 {json.dumps(candidate, ensure_ascii=True)}
 """
-    return call_json(prompt, api_key, model)
+    return call_json(prompt, api_key, model, provider)
