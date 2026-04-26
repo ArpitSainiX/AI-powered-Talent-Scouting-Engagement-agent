@@ -149,9 +149,6 @@ Scores can change when AI enrichment is enabled.
 
 See [docs/architecture.md](docs/architecture.md).
 
-## Demo Script
-
-See [docs/demo-script.md](docs/demo-script.md).
 
 ## Future Upgrades
 
